@@ -136,8 +136,31 @@ def breadthFirstSearch(problem: SearchProblem):
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    # Dijkstra's algorithm
-    util.raiseNotDefined()
+    # Dijkstra's algorithm - now we must consider costs
+    priorityQueue = PriorityQueue() # def push(self, item, priority):
+    visited = set()
+    start_coords = problem.getStartState()
+    priorityQueue.push((start_coords, 0,  []), 0) # cost to get to start is 0
+    explored_costs = dict()
+    explored_costs[start_coords] = 0
+    while not priorityQueue.isEmpty():
+        current_coords, current_cost, current_path = priorityQueue.pop()
+        if problem.isGoalState(current_coords):
+            return current_path
+        if current_coords in visited:
+            continue # skip because we have already been here
+        visited.add(current_coords)
+
+        for neighbor_coords, directionTaken, costToNeighbor in problem.getSuccessors(current_coords):
+            if neighbor_coords in visited:
+                continue
+            totalCost = current_cost + costToNeighbor
+            if totalCost < explored_costs.get(neighbor_coords, float("inf")):
+                explored_costs[neighbor_coords] = totalCost
+                priorityQueue.push( (neighbor_coords, totalCost, current_path + [directionTaken]), totalCost)
+
+    return []
+
 
 def nullHeuristic(state, problem=None):
     """
