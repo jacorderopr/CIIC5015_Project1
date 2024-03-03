@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+from util import Stack, Queue, PriorityQueue
 
 class SearchProblem:
     """
@@ -87,13 +88,51 @@ def depthFirstSearch(problem: SearchProblem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # print("Start:", problem.getStartState())
+    # print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # print("Start's successors:", problem.getSuccessors(problem.getStartState()))
+
+    # getSuccessors gives your: (successor, action, step_cost)
+    stack = Stack()
+    visited = set()
+    stack.push( (problem.getStartState(), [])) # stack contains: (current_coords, path: list)
+
+
+    while not stack.isEmpty():
+        current_coords, path = stack.pop()
+        # print(f"current_coords: {current_coords} , path: {path}")
+        if current_coords not in visited:
+            visited.add(current_coords)
+        if problem.isGoalState(current_coords):
+            # need to return the path taken
+            print(f"length of solution: {len(path)}")
+            return path
+        for neighbor_coords, directionTaken, _ in problem.getSuccessors(current_coords):
+            if neighbor_coords not in visited:
+                stack.push((neighbor_coords, path + [directionTaken]))
+
+    return []
+
 
 def breadthFirstSearch(problem: SearchProblem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = Queue()
+    visited = set()
+    start_coords = problem.getStartState()
+    queue.push( (start_coords, []) )
+    visited.add(start_coords)
 
+    while not queue.isEmpty():
+        current_coords, current_path = queue.pop()
+        if problem.isGoalState(current_coords):
+            return current_path
+
+        for neighbor_coords, directionTaken, _ in problem.getSuccessors(current_coords):
+            if neighbor_coords not in visited:
+                visited.add(neighbor_coords)
+                queue.push( (neighbor_coords, current_path + [directionTaken]) )
+    return []
 def uniformCostSearch(problem: SearchProblem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
