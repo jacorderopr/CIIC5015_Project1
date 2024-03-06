@@ -172,7 +172,34 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    # idea: use manhattanHeuristic to calculate distance between the neighbor coord and the goal and then prioritize the lower distance
+    # use explored_costs dict
+    priorityQueue = PriorityQueue()
+    visited = set()
+    explored_costs = dict()
+
+    start_coords = problem.getStartState()
+    priorityQueue.push( (start_coords, 0, []), 0)
+
+    while not priorityQueue.isEmpty():
+        coords, cost, path = priorityQueue.pop()
+
+        if problem.isGoalState(coords):
+            return path
+        if coords in visited:
+            continue
+        visited.add(coords)
+
+        for neighbor_coords, directionTaken, costToNeighbor in problem.getSuccessors(coords):
+            if neighbor_coords in visited:
+                continue
+            heuristic_cost = cost + costToNeighbor + heuristic(neighbor_coords, problem)
+            # print(f"for neighbor_coords: {neighbor_coords} heuristic cost is : {heuristic_cost}")
+            if heuristic_cost < explored_costs.get(neighbor_coords, float("inf")):
+                explored_costs[neighbor_coords] = heuristic_cost
+                priorityQueue.push( (neighbor_coords, cost + costToNeighbor, path + [directionTaken]), heuristic_cost)
+    return []
 
 
 # Abbreviations
